@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .result h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .result p {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .result p strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Recommendation System</h1>
+        <form id="recommendation-form">
+            <div class="form-group">
+                <label for="customer_id">Enter Customer ID:</label>
+                <input type="text" id="customer_id" name="customer_id" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Get Recommendations</button>
+            </div>
+        </form>
+        <div class="result" id="result"></div>
+    </div>
+    <script>
+        document.getElementById('recommendation-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const customerId = document.getElementById('customer_id').value;
+
+            fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ customer_id: customerId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.error) {
+                    resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h2>Recommendations for Customer ${customerId}</h2>
+                        <p><strong>Purchased Products:</strong> ${data.purchased.join(', ')}</p>
+                        <p><strong>Recommended Products:</strong> ${data.recommendations.join(', ')}</p>
+                    `;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
